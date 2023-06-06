@@ -1,5 +1,6 @@
 package com.kjslocal.springsecurityjwttemplate.security.config;
 
+import com.kjslocal.springsecurityjwttemplate.security.service.UserInfoUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -7,12 +8,9 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -21,21 +19,25 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfigurer {
 
     @Bean
-    public UserDetailsService userDetailsService(PasswordEncoder pwEncoder) {
+    public UserDetailsService userDetailsService() {
 
-        //Hard coded users
-        UserDetails admin = User.withUsername("admin")
-                .password(pwEncoder.encode("password"))
-                .roles("ADMIN")
-                .build();
+        /** //Hard coded users
+         UserDetails admin = User.withUsername("admin")
+         .password(pwEncoder.encode("password"))
+         .roles("ADMIN")
+         .build();
 
-        UserDetails user = User.withUsername("user")
-                .password(pwEncoder.encode("password"))
-                .roles("USER")
-                .build();
+         UserDetails user = User.withUsername("user")
+         .password(pwEncoder.encode("password"))
+         .roles("USER")
+         .build();
 
-        return new InMemoryUserDetailsManager(admin, user);
+         return new InMemoryUserDetailsManager(admin, user);
+         **/
 
+
+        // Fetch user from database
+        return new UserInfoUserDetailsService();
     }
 
     @Bean
@@ -47,7 +49,7 @@ public class SecurityConfigurer {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity.csrf().disable()
                 .authorizeHttpRequests()
-                .antMatchers("/auth/welcome").permitAll()
+                .antMatchers("/auth/welcome", "/auth/createUser").permitAll()
                 .and()
                 .authorizeHttpRequests()
                 .antMatchers("/auth/view/**").authenticated()
@@ -56,4 +58,11 @@ public class SecurityConfigurer {
                 .and().build();
     }
 
+    @Bean
+    public AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+        authenticationProvider.setUserDetailsService(userDetailsService());
+        authenticationProvider.setPasswordEncoder(passwordEncoder());
+        return authenticationProvider;
+    }
 }

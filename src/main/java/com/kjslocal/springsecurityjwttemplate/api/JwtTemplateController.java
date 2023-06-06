@@ -23,10 +23,10 @@ public class JwtTemplateController {
         return "This page is not secured";
     }
 
-    /** @PostMapping(value = "/createUser", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/createUser", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserInfoResponseDto> createUser(@RequestBody UserInfoRequestDto request) {
         return new ResponseEntity<>(service.createUser(request), HttpStatus.OK);
-    } **/
+    }
 
     @GetMapping("/view/admin")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")

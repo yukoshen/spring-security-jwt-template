@@ -2,6 +2,11 @@ package com.kjslocal.springsecurityjwttemplate.repository;
 
 import com.kjslocal.springsecurityjwttemplate.entity.UserInfo;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface UserRepository extends JpaRepository<UserInfo, Integer> {
+import java.util.Optional;
+
+@Repository
+public interface UserInfoRepository extends JpaRepository<UserInfo, Integer> {
+    Optional<UserInfo> findByName(String username);
 }

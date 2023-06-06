@@ -1,2 +1,4 @@
-package com.kjslocal.springsecurityjwttemplate.security.model;public class AuthorizationRequest {
+package com.kjslocal.springsecurityjwttemplate.security.model;
+
+public class AuthorizationRequest {
 }
